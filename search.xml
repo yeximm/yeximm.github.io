@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Linux部署web程序在后台运行</title>
+      <link href="article/fff.html"/>
+      <url>article/fff.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="Linux部署web程序在后台运行"><a href="#Linux部署web程序在后台运行" class="headerlink" title="Linux部署web程序在后台运行"></a>Linux部署web程序在后台运行</h1><p>通过flask、django、torando等web框架部署web应用时，一般都是在终端上运行python+主程序来实现，但是关闭终端后程序也会被kill，最近重新部署了tornado网站，实现了shell脚本控制程序启动，下面记录过程。</p><p>tornado的启动方式与flask或django差不多，不太懂的可以先上手一个测试一下。</p><blockquote><p>注意：</p><ol><li>本文主要运行文件为server_worden.py程序。</li><li>为了区别不同的运行进程，需要将主要运行的程序文件名称做出区别！！</li><li>修改以下三个文件中的<code>server_worden</code>，改为项目所需文件即可。</li></ol></blockquote><h1 id="编写启动程序的shell脚本"><a href="#编写启动程序的shell脚本" class="headerlink" title="编写启动程序的shell脚本"></a>编写启动程序的shell脚本</h1><p>能看到这里的相信你已经把web项目能够初步实现了，一般都是在虚拟环境中启动，这样能更好的控制程序使用的包文件。</p><p>首先在项目目录中创建一个shell文件：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo touch start</span><br></pre></td></tr></table></figure><p><code>start</code>文件的内容如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line">echo &quot;进入程序目录&quot;</span><br><span class="line">cd &#x2F;home&#x2F;worden-tornado&#x2F;</span><br><span class="line">echo &quot;启动虚拟环境venv...&quot;</span><br><span class="line">source .&#x2F;venv&#x2F;bin&#x2F;activate</span><br><span class="line">echo &quot;执行程序...&quot;</span><br><span class="line">python server_worden.py &amp;</span><br><span class="line">echo &quot;程序启动中...&quot;</span><br></pre></td></tr></table></figure><p>保存即可，不想加echo的可以删掉。</p><h1 id="编写关闭程序的脚本"><a href="#编写关闭程序的脚本" class="headerlink" title="编写关闭程序的脚本"></a>编写关闭程序的脚本</h1><p>同样是shell文件，创建：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo touch stop</span><br></pre></td></tr></table></figure><p>stop文件中内容如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line">echo &quot;关闭worden程序中...&quot;</span><br><span class="line"></span><br><span class="line">pid&#x3D;&#96;ps -ef | grep python | grep server_worden.py | awk &#39;&#123;print $2&#125;&#39;&#96;</span><br><span class="line">if [ -n &quot;$pid&quot; ]</span><br><span class="line">then</span><br><span class="line">        echo &quot;关闭worden程序，pid: $pid&quot;</span><br><span class="line">        kill -9 $pid</span><br><span class="line">fi</span><br><span class="line">echo &quot;程序已关闭&quot;</span><br></pre></td></tr></table></figure><p>因为python程序已经通过无窗口启动，所以关闭程序只能通过kill进程来实现，上边pid代表的内容为启动的python程序所绑定的。</p><h1 id="编写重启程序脚本"><a href="#编写重启程序脚本" class="headerlink" title="编写重启程序脚本"></a>编写重启程序脚本</h1><p>先创建文件：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo touch reload</span><br></pre></td></tr></table></figure><p>reload文件内容为：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line">echo &quot;关闭worden程序中...&quot;</span><br><span class="line"></span><br><span class="line">pid&#x3D;&#96;ps -ef | grep python | grep server_worden.py | awk &#39;&#123;print $2&#125;&#39;&#96;</span><br><span class="line">if [ -n &quot;$pid&quot; ]</span><br><span class="line">then</span><br><span class="line">        echo &quot;关闭worden程序，pid: $pid&quot;</span><br><span class="line">        kill -9 $pid</span><br><span class="line">fi</span><br><span class="line">echo &quot;程序已关闭&quot;</span><br><span class="line"></span><br><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line">echo &quot;进入程序目录&quot;</span><br><span class="line">cd &#x2F;home&#x2F;worden-tornado&#x2F;</span><br><span class="line">echo &quot;启动虚拟环境venv...&quot;</span><br><span class="line">source .&#x2F;venv&#x2F;bin&#x2F;activate</span><br><span class="line">echo &quot;执行程序...&quot;</span><br><span class="line">python server_worden.py &amp;</span><br><span class="line">echo &quot;worden程序已运行&quot;</span><br></pre></td></tr></table></figure><p>就是把启动和关闭的代码按顺序写好。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Linux </category>
+          
+          <category> 网站 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python3 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Ubuntu、Debain通过apt安装python3的pip3</title>
       <link href="article/d4ee.html"/>
       <url>article/d4ee.html</url>
