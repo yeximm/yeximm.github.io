@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Linux中使用system配置开机自启动shell脚本</title>
+      <link href="article/4aa1.html"/>
+      <url>article/4aa1.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="Linux中使用system配置开机自启动shell脚本"><a href="#Linux中使用system配置开机自启动shell脚本" class="headerlink" title="Linux中使用system配置开机自启动shell脚本"></a>Linux中使用system配置开机自启动shell脚本</h1><p>以上篇文章的3个启动web的程序为例。</p><p>分别是start（启动程序脚本）、stop（关闭程序脚本）、reload（重启程序脚本）</p><h1 id="创建配置文件"><a href="#创建配置文件" class="headerlink" title="创建配置文件"></a>创建配置文件</h1><p>service配置文件写法：</p><p>进入目录**/etc/systemd/system**，创建文件 <code>vi worden.service</code></p><p>内容如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;worden_python程序启动</span><br><span class="line"> </span><br><span class="line">[Service]</span><br><span class="line">Type&#x3D;simple</span><br><span class="line">EnvironmentFile&#x3D;-&#x2F;home&#x2F;worden-tornado&#x2F;worden-shell</span><br><span class="line">ExecStart&#x3D;sh &#x2F;home&#x2F;worden-tornado&#x2F;worden-shell&#x2F;start</span><br><span class="line">ExecReload&#x3D;sh &#x2F;home&#x2F;worden-tornado&#x2F;worden-shell&#x2F;reload</span><br><span class="line">ExecStop&#x3D;&#x2F;home&#x2F;worden-tornado&#x2F;worden-shell&#x2F;stop</span><br><span class="line">KillMode&#x3D;none</span><br><span class="line">Restart&#x3D;on-failure</span><br><span class="line">RestartSec&#x3D;42s</span><br><span class="line"> </span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>其中<strong>ExecStart 表示启动命令（需指定全路径）， ExecReload表示重启命令（需指定全路径），ExecStop表示关闭命令（需指定全路径）。</strong></p><p>这里指向的是上篇文章中的三个shell文件。</p><h1 id="设置开机自启"><a href="#设置开机自启" class="headerlink" title="设置开机自启"></a>设置开机自启</h1><p>首先要重新载入systemd服务，执行命令：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure><p>设置开机自启动</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable worden.service</span><br></pre></td></tr></table></figure><p>启动worden.service服务</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start worden.service</span><br></pre></td></tr></table></figure><p>查看服务状态</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status worden.service</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> Linux </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> shell </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Linux部署web程序在后台运行</title>
       <link href="article/fff.html"/>
       <url>article/fff.html</url>
