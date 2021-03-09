@@ -207,7 +207,7 @@ function supportRenderTextureFormat (gl, internalFormat, format, type) {
 
 function startGUI () {
     var gui = new dat.GUI({ width: 300 });
-    gui.add(config, 'DYE_RESOLUTION', { 'high': 1024, 'medium': 512, 'low': 256, 'very low': 128 }).name('质量').onFinishChange(initFramebuffers);
+    gui.add(config, 'DYE_RESOLUTION', { '高': 1024, '中等': 512, '低': 256, '非常低': 128 }).name('质量').onFinishChange(initFramebuffers);
     gui.add(config, 'SIM_RESOLUTION', { '32': 32, '64': 64, '128': 128, '256': 256 }).name('模拟分辨率').onFinishChange(initFramebuffers);
     gui.add(config, 'DENSITY_DISSIPATION', 0, 4.0).name('扩散密度');
     gui.add(config, 'VELOCITY_DISSIPATION', 0, 4.0).name('扩散速度');
